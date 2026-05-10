@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react'
 import { projectsAPI } from '../services/api'
 import toast from 'react-hot-toast'
 
-const COLORS = ['#7c6aff', '#3b82f6', '#10b981', '#f59e0b', '#ef4444', '#ec4899', '#8b5cf6', '#06b6d4', '#14b8a6', '#f97316']
+const COLORS = ['#06b6d4', '#0ea5e9', '#14b8a6', '#2563eb', '#0891b2', '#0284c7']
 
 export default function ProjectModal({ project, onClose, onSaved }) {
   const editing = !!project
@@ -34,7 +34,7 @@ export default function ProjectModal({ project, onClose, onSaved }) {
 
   return (
     <div className="fixed inset-0 bg-black/70 backdrop-blur-sm z-50 flex items-center justify-center p-4" onClick={onClose}>
-      <div className="card w-full max-w-md animate-slide-up" onClick={e => e.stopPropagation()}>
+      <div className="w-full max-w-md rounded-3xl border border-white/10 bg-slate-900/80 backdrop-blur-2xl p-6 shadow-[0_0_60px_rgba(0,255,255,0.08)] animate-slide-up" onClick={e => e.stopPropagation()}>
         <div className="flex items-center justify-between mb-6">
           <h2 className="font-display font-bold text-lg text-white">
             {editing ? 'Edit Project' : 'New Project'}

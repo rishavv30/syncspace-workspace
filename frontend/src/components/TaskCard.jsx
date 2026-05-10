@@ -12,7 +12,7 @@ export default function TaskCard({ task, onEdit, onDelete, onStatusChange, canMa
 
   return (
     <div className={`
-      bg-surface-2 border rounded-xl p-3 group hover:border-accent/40 transition-all
+      bg-white/[0.03] backdrop-blur-lg border border-white/10 rounded-2xl p-4 shadow-lg
       ${isOverdue ? 'border-red-500/40 bg-red-500/5' : 'border-border'}
     `}>
       {/* Priority badge */}

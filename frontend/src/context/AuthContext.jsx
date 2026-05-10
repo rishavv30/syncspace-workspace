@@ -6,33 +6,67 @@ const AuthContext = createContext(null)
 export function AuthProvider({ children }) {
   const [user, setUser] = useState(null)
   const [loading, setLoading] = useState(true)
+  const [workspace, setWorkspace] = useState('SyncSpace')
 
   const fetchMe = useCallback(async () => {
     const token = localStorage.getItem('token')
-    if (!token) { setLoading(false); return }
+
+    if (!token) {
+      setLoading(false)
+      return
+    }
+
     try {
       const { data } = await authAPI.me()
-      setUser(data)
-    } catch {
+
+      setUser({
+        ...data,
+        displayRole:
+          data.role === 'admin'
+            ? 'Workspace Admin'
+            : 'Collaborator',
+      })
+    } catch (err) {
       localStorage.removeItem('token')
+      setUser(null)
     } finally {
       setLoading(false)
     }
   }, [])
 
-  useEffect(() => { fetchMe() }, [fetchMe])
+  useEffect(() => {
+    fetchMe()
+  }, [fetchMe])
 
   const login = async (credentials) => {
     const { data } = await authAPI.login(credentials)
+
     localStorage.setItem('token', data.access_token)
-    setUser(data.user)
+
+    setUser({
+      ...data.user,
+      displayRole:
+        data.user.role === 'admin'
+          ? 'Workspace Admin'
+          : 'Collaborator',
+    })
+
     return data
   }
 
   const signup = async (userData) => {
     const { data } = await authAPI.signup(userData)
+
     localStorage.setItem('token', data.access_token)
-    setUser(data.user)
+
+    setUser({
+      ...data.user,
+      displayRole:
+        data.user.role === 'admin'
+          ? 'Workspace Admin'
+          : 'Collaborator',
+    })
+
     return data
   }
 
@@ -41,10 +75,26 @@ export function AuthProvider({ children }) {
     setUser(null)
   }
 
-  const updateUser = (updates) => setUser(prev => ({ ...prev, ...updates }))
+  const updateUser = (updates) => {
+    setUser(prev => ({
+      ...prev,
+      ...updates,
+    }))
+  }
 
   return (
-    <AuthContext.Provider value={{ user, loading, login, signup, logout, updateUser, isAdmin: user?.role === 'admin' }}>
+    <AuthContext.Provider
+      value={{
+        user,
+        loading,
+        workspace,
+        login,
+        signup,
+        logout,
+        updateUser,
+        isAdmin: user?.role === 'admin',
+      }}
+    >
       {children}
     </AuthContext.Provider>
   )
@@ -52,6 +102,10 @@ export function AuthProvider({ children }) {
 
 export const useAuth = () => {
   const ctx = useContext(AuthContext)
-  if (!ctx) throw new Error('useAuth must be used within AuthProvider')
+
+  if (!ctx) {
+    throw new Error('useAuth must be used within AuthProvider')
+  }
+
   return ctx
 }
